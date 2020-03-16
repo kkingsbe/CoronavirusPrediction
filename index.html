@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>COVID-19 Predicted Infection</title>
+    <meta name="description" content="">
+    <script src="https://cdn.rawgit.com/Keyang/node-csvtojson/d41f44aa/browser/csvtojson.min.js"></script>
+    <script src="js/regression.min.js"></script>
+    <script src="js/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+    <div class="container">
+      <p>COVID-19 Exponential Forecast</p>
+      <div class="plotGrid">
+        <div class="graphContainer">
+          <div id="confirmedCasesGraph" class="graph"></div>
+        </div>
+        <div class="graphContainer">
+          <div id="deathsGraph" class="graph"></div>
+        </div>
+        <div class="graphContainer">
+          <div id="recoveriesGraph" class="graph"></div>
+        </div>
+      </div>
+    </div>
+    <script src="js/index.js" async defer></script>
+  </body>
+</html>
