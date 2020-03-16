@@ -4,18 +4,21 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;
+  color: white;
 }
 .container {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   margin: 0px;
   padding: 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: linear-gradient( #48c6ef, #6f86d6);
 }
 .container p {
-  font-size: xx-large;
+  font-size: xxx-large;
+  margin: 20px;
 }
 .plotGrid {
   display: grid;

@@ -4,7 +4,7 @@ var deathsArray, forecastDeaths
 var deathsA, deathsB
 var recoveredArray, forecastRecovered
 var recoveredA, recoveredB
-var forecastLength = 14 //How many days into the future are forecasted
+var forecastLength = 7 //How many days into the future are forecasted
 
 async function main() {
   await getData()
@@ -171,7 +171,7 @@ function plotData(dataSet) {
       markers = {
         x: x,
         y: y,
-        name: "Confirmed Cases",
+        name: "Cases",
         mode: "markers"
       }
       fitLine = {
@@ -182,7 +182,7 @@ function plotData(dataSet) {
       }
       data = [fitLine, markers]
       layout = {
-        title: `COVID-19 Cases in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`,
+        title: `COVID-19 Cases in the US <br /> y = ${deathsA} x e <sup>${deathsB}x</sup>`,
         xaxis: {title: "Days since January 22, 2020"},
         yaxis: {title: "Number of confirmed cases"}
       }
@@ -207,7 +207,7 @@ function plotData(dataSet) {
       markers = {
         x: x,
         y: y,
-        name: "Confirmed Deaths",
+        name: "Deaths",
         mode: "markers"
       }
       fitLine = {
@@ -218,7 +218,7 @@ function plotData(dataSet) {
       }
       data = [fitLine, markers]
       layout = {
-        title: `COVID-19 deaths in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`,
+        title: `COVID-19 deaths in the US <br /> y = ${recoveredA} x e <sup>${recoveredB}x</sup>`,
         xaxis: {title: "Days since January 22, 2020"},
         yaxis: {title: "Number of confirmed deaths"}
       }
@@ -231,8 +231,10 @@ function plotData(dataSet) {
       x = []
       y = []
       arr.forEach(point => {
-        x.push(point[0])
-        y.push(point[1])
+        if(!(point[1]==y[y.length-1])) {
+          x.push(point[0])
+          y.push(point[1])
+        }
       })
       forecastX = []
       forecastY = []
@@ -243,7 +245,7 @@ function plotData(dataSet) {
       markers = {
         x: x,
         y: y,
-        name: "Confirmed Recoveries",
+        name: "Recoveries",
         mode: "markers"
       }
       fitLine = {
@@ -254,7 +256,7 @@ function plotData(dataSet) {
       }
       data = [fitLine, markers]
       layout = {
-        title: `COVID-19 recoveries in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`,
+        title: `COVID-19 recoveries in the US <br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`,
         xaxis: {title: "Days since January 22, 2020"},
         yaxis: {title: "Number of confirmed recoveries"}
       }
