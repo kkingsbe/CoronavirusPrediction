@@ -182,7 +182,9 @@ function plotData(dataSet) {
       }
       data = [fitLine, markers]
       layout = {
-        title: `COVID-19 Cases in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`
+        title: `COVID-19 Cases in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`,
+        xaxis: {title: "Days since January 22, 2020"},
+        yaxis: {title: "Number of confirmed cases"}
       }
       Plotly.newPlot(plot, data, layout, {responsive: true})
       break 
@@ -216,7 +218,9 @@ function plotData(dataSet) {
       }
       data = [fitLine, markers]
       layout = {
-        title: `COVID-19 deaths in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`
+        title: `COVID-19 deaths in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`,
+        xaxis: {title: "Days since January 22, 2020"},
+        yaxis: {title: "Number of confirmed deaths"}
       }
       Plotly.newPlot(plot, data, layout, {responsive: true})
       break
@@ -250,7 +254,9 @@ function plotData(dataSet) {
       }
       data = [fitLine, markers]
       layout = {
-        title: `COVID-19 recoveries in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`
+        title: `COVID-19 recoveries in the US <br /> ${confirmedA} x e <sup>${confirmedB}x</sup>`,
+        xaxis: {title: "Days since January 22, 2020"},
+        yaxis: {title: "Number of confirmed recoveries"}
       }
       Plotly.newPlot(plot, data, layout, {responsive: true})
       break
