@@ -22,6 +22,8 @@ async function main() {
   plotData("confirmed")
   plotData("deaths")
   plotData("recovered")
+
+  setInterval(updateCurrentNumbers, 1000)
 }
 
 async function getData() {
@@ -72,6 +74,7 @@ async function getCovidData(fileUrl) {
             }
           }
         })
+        console.log(series)
         resolve(series)    
       })
     })
@@ -263,6 +266,23 @@ function plotData(dataSet) {
       Plotly.newPlot(plot, data, layout, {responsive: true})
       break
   }
+}
+
+function updateCurrentNumbers() {
+  let now = new Date()
+  let then = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0,0,0)
+  let diff = now.getTime() - then.getTime()
+  let infected = forecast("confirmed", confirmedArray.length-1 + (diff/8.64e+7))
+  let dead = forecast("deaths", confirmedArray.length-1 + (diff/8.64e+7))
+  let recovered = forecast("recovered", confirmedArray.length-1 + (diff/8.64e+7))
+  
+  document.getElementById("predictedInfected").innerHTML = `Predicted Infections: ${Math.floor(infected)}`
+  document.getElementById("predictedDead").innerHTML = `Predicted Deaths: ${Math.floor(dead)}`
+  document.getElementById("predictedRecovered").innerHTML = `Predicted Recoveries: ${Math.floor(recovered)}`
 }
 
 main()
