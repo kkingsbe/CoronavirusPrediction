@@ -4,7 +4,7 @@ var deathsArray, forecastDeaths
 var deathsA, deathsB
 var recoveredArray, forecastRecovered
 var recoveredA, recoveredB
-var forecastLength = 7 //How many days into the future are forecasted
+var forecastLength = 14 //How many days into the future are forecasted
 
 async function main() {
   await getData()
