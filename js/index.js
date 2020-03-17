@@ -23,7 +23,7 @@ async function main() {
   plotData("deaths")
   plotData("recovered")
 
-  setInterval(updateCurrentNumbers, 1000)
+  setInterval(updateCurrentNumbers, 100)
 }
 
 async function getData() {
@@ -283,6 +283,10 @@ function updateCurrentNumbers() {
   document.getElementById("predictedInfected").innerHTML = `Predicted Infections: ${Math.floor(infected)}`
   document.getElementById("predictedDead").innerHTML = `Predicted Deaths: ${Math.floor(dead)}`
   document.getElementById("predictedRecovered").innerHTML = `Predicted Recoveries: ${Math.floor(recovered)}`
+
+  document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
+  document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
+  document.getElementById("recoveredProgressBar").value = (recovered - Math.floor(recovered)) * 100
 }
 
 main()

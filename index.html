@@ -19,9 +19,18 @@
     <div class="container">
       <p>COVID-19 Forecast</p>
       <div class="tickerContainer">
-        <p id="predictedInfected">Predicted Infections: </p>
-        <p id="predictedDead">Predicted Deaths: </p>
-        <p id="predictedRecovered">Predicted Recoveries: </p>
+        <div class="tickerGroup">
+          <progress id="infectedProgressBar" value="0" max="100"></progress>
+          <p id="predictedInfected">Predicted Infections: </p>
+        </div>
+        <div class="tickerGroup">
+          <progress id="deadProgressBar" value="0" max="100"></progress>
+          <p id="predictedDead">Predicted Deaths: </p>
+        </div>
+        <div class="tickerGroup">
+          <progress id="recoveredProgressBar" value="0" max="100"></progress>
+          <p id="predictedRecovered">Predicted Recoveries: </p>
+        </div>
       </div>
       <div class="plotGrid">
         <div class="graphContainer">
