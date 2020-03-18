@@ -153,119 +153,61 @@ function forecastRange(dataSet) {
 }
 
 function plotData(dataSet) {
-  let plot, arr, forecastArr, x, y, forecastX, forecastY, markers, fitline, data, layout
+  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName
   switch(dataSet) {
     case "confirmed":
       plot = document.getElementById("confirmedCasesGraph")
       forecastArr = forecastConfirmed
       arr = confirmedArray
-      x = []
-      y = []
-      arr.forEach(point => {
-        x.push(point[0])
-        y.push(point[1])
-      })
-      forecastX = []
-      forecastY = []
-      forecastArr.forEach(point => {
-        forecastX.push(point[0])
-        forecastY.push(point[1])
-      })
-      markers = {
-        x: x,
-        y: y,
-        name: "Cases",
-        mode: "markers"
-      }
-      fitLine = {
-        x: forecastX,
-        y: forecastY,
-        name: "Forecast Cases",
-        mode: "lines"
-      }
-      data = [fitLine, markers]
-      layout = {
-        title: `COVID-19 Cases in the US <br /> y = ${deathsA} x e <sup>${deathsB}x</sup>`,
-        xaxis: {title: "Days since January 22, 2020"},
-        yaxis: {title: "Number of confirmed cases"}
-      }
-      Plotly.newPlot(plot, data, layout, {responsive: true})
+      markerName = "Cases"
+      title = `COVID-19 Cases in the US <br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`
       break 
     case "deaths":
       plot = document.getElementById("deathsGraph")
       forecastArr = forecastDeaths
       arr = deathsArray
-      x = []
-      y = []
-      arr.forEach(point => {
-        x.push(point[0])
-        y.push(point[1])
-      })
-      forecastX = []
-      forecastY = []
-      forecastArr.forEach(point => {
-        forecastX.push(point[0])
-        forecastY.push(point[1])
-      })
-      markers = {
-        x: x,
-        y: y,
-        name: "Deaths",
-        mode: "markers"
-      }
-      fitLine = {
-        x: forecastX,
-        y: forecastY,
-        name: "Forecast Deaths",
-        mode: "lines"
-      }
-      data = [fitLine, markers]
-      layout = {
-        title: `COVID-19 deaths in the US <br /> y = ${recoveredA} x e <sup>${recoveredB}x</sup>`,
-        xaxis: {title: "Days since January 22, 2020"},
-        yaxis: {title: "Number of confirmed deaths"}
-      }
-      Plotly.newPlot(plot, data, layout, {responsive: true})
+      markerName = "Deaths"
+      title = `COVID-19 Deaths in the US <br /> y = ${deathsA} x e <sup>${deathsB}x</sup>`
       break
     case "recovered":
       plot = document.getElementById("recoveriesGraph")
       forecastArr = forecastRecovered
       arr = recoveredArray
-      x = []
-      y = []
-      arr.forEach(point => {
-        if(!(point[1]==y[y.length-1])) {
-          x.push(point[0])
-          y.push(point[1])
-        }
-      })
-      forecastX = []
-      forecastY = []
-      forecastArr.forEach(point => {
-        forecastX.push(point[0])
-        forecastY.push(point[1])
-      })
-      markers = {
-        x: x,
-        y: y,
-        name: "Recoveries",
-        mode: "markers"
-      }
-      fitLine = {
-        x: forecastX,
-        y: forecastY,
-        name: "Forecast Recoveries",
-        mode: "lines"
-      }
-      data = [fitLine, markers]
-      layout = {
-        title: `COVID-19 recoveries in the US <br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`,
-        xaxis: {title: "Days since January 22, 2020"},
-        yaxis: {title: "Number of confirmed recoveries"}
-      }
-      Plotly.newPlot(plot, data, layout, {responsive: true})
+      markerName = "Recoveries"
+      title = `COVID-19 Recoveries in the US <br /> y = ${recoveredA} x e <sup>${recoveredB}x</sup>`
       break
   }
+  x = []
+  y = []
+  arr.forEach(point => {
+    x.push(point[0])
+    y.push(point[1])
+  })
+  forecastX = []
+  forecastY = []
+  forecastArr.forEach(point => {
+    forecastX.push(point[0])
+    forecastY.push(point[1])
+  })
+  markers = {
+    x: x,
+    y: y,
+    name: markerName,
+    mode: "markers"
+  }
+  fitLine = {
+    x: forecastX,
+    y: forecastY,
+    name: `Forecast ${markerName}`,
+    mode: "lines"
+  }
+  data = [fitLine, markers]
+  layout = {
+    title: title,
+    xaxis: {title: "Days since January 22, 2020"},
+    yaxis: {title: `Number of confirmed ${markerName}`}
+  }
+  Plotly.newPlot(plot, data, layout, {responsive: true})
 }
 
 function updateCurrentNumbers() {
