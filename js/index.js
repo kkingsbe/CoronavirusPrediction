@@ -280,9 +280,9 @@ function updateCurrentNumbers() {
   let dead = forecast("deaths", confirmedArray.length-1 + (diff/8.64e+7))
   let recovered = forecast("recovered", confirmedArray.length-1 + (diff/8.64e+7))
   
-  document.getElementById("predictedInfected").innerHTML = `Predicted Infections: ${Math.floor(infected)}`
-  document.getElementById("predictedDead").innerHTML = `Predicted Deaths: ${Math.floor(dead)}`
-  document.getElementById("predictedRecovered").innerHTML = `Predicted Recoveries: ${Math.floor(recovered)}`
+  document.getElementById("predictedInfected").innerHTML = `Predicted Current Infections: ${Math.floor(infected)}`
+  document.getElementById("predictedDead").innerHTML = `Predicted Current Deaths: ${Math.floor(dead)}`
+  document.getElementById("predictedRecovered").innerHTML = `Predicted Current Recoveries: ${Math.floor(recovered)}`
 
   document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
   document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100

@@ -63,6 +63,12 @@ progress::-webkit-progress-value {
 	border-radius: 15px;
 	box-shadow:0px 0px 6px rgb(153, 153, 153) inset;
 }
+#infectedProgressBar::-webkit-progress-value {
+  background: rgb(221, 20, 20) !important;
+}
+#deadProgressBar::-webkit-progress-value {
+  background: rgb(0, 0, 0) !important;
+}
 progress:after {
 	margin:-26px 0 0 -7px;
 	padding:0;
