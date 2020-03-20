@@ -83,7 +83,7 @@ async function getCovidData(fileUrl) {
             }
           }
         }
-        console.log(series)
+        //console.log(series)
         resolve(series)    
       })
     })
@@ -251,10 +251,6 @@ function populateStates() {
 
 document.getElementById("stateSelect").onchange = async function() {
   await getData()
-  states = states.sort()
-  populateStates()
-
-  console.log(recoveredArray)
 
   regressData("confirmed", confirmedArray)
   regressData("deaths", deathsArray)
