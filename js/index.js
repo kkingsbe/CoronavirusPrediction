@@ -5,9 +5,14 @@ var deathsA, deathsB
 var recoveredArray, forecastRecovered
 var recoveredA, recoveredB
 var forecastLength = 7 //How many days into the future are forecasted
+var states = []
 
 async function main() {
   await getData()
+  states = states.sort()
+  populateStates()
+
+  console.log(recoveredArray)
 
   regressData("confirmed", confirmedArray)
   regressData("deaths", deathsArray)
@@ -16,8 +21,6 @@ async function main() {
   forecastConfirmed = forecastRange("confirmed")
   forecastDeaths = forecastRange("deaths")
   forecastRecovered = forecastRange("recovered")
-
-  console.log(deathsArray)
 
   plotData("confirmed")
   plotData("deaths")
@@ -47,6 +50,8 @@ async function getRecovered() {
 
 async function getCovidData(fileUrl) {
   let series = {}
+  let state = document.getElementById("stateSelect").value
+  console.log(state)
   return new Promise((resolve, reject) => {
     fetch(fileUrl)
     .then(response => {
@@ -59,9 +64,10 @@ async function getCovidData(fileUrl) {
       })
       .fromString(decoded)
       .then(result => {
-        result.forEach(region => {
+        for(let i = 0; i < result.length; i++) {
+          let region = result[i]
+          if(state != "United States" && state != region["Province/State"]) continue
           if(region["Country/Region"] == "US") {
-            //console.log(region)
             for(date in region) {
               //Skip if not a date
               if(!Date.parse(date)) {
@@ -70,10 +76,13 @@ async function getCovidData(fileUrl) {
               if(typeof(series[date]) == "undefined") {
                 series[date] = 0
               }
+              if(!region["Province/State"].includes(",") && !states.includes(region["Province/State"])) {
+                states.push(region["Province/State"])
+              }
               series[date] += parseInt(region[date])
             }
           }
-        })
+        }
         console.log(series)
         resolve(series)    
       })
@@ -104,7 +113,7 @@ function regressData(dataSet, data) {
   for(let x = i; x < data.length; x++) {
     trimmedData.push(data[x])
   }
-  console.log(trimmedData)
+  //console.log(trimmedData)
   let result = regression("exponential", trimmedData)
   a = result.equation[0]
   b = result.equation[1]
@@ -122,7 +131,7 @@ function regressData(dataSet, data) {
       recoveredB = b
       break
   }
-  console.log(result)
+  //console.log(result)
 }
 
 function forecast(dataSet, daySinceEpoch) {
@@ -229,6 +238,35 @@ function updateCurrentNumbers() {
   document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
   document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
   document.getElementById("recoveredProgressBar").value = (recovered - Math.floor(recovered)) * 100
+}
+
+function populateStates() {
+  let stateSelect = document.getElementById("stateSelect")
+  states.forEach(state => {
+    let option = document.createElement("option")
+    option.innerHTML = state
+    stateSelect.appendChild(option)
+  })
+}
+
+document.getElementById("stateSelect").onchange = async function() {
+  await getData()
+  states = states.sort()
+  populateStates()
+
+  console.log(recoveredArray)
+
+  regressData("confirmed", confirmedArray)
+  regressData("deaths", deathsArray)
+  regressData("recovered", recoveredArray)
+
+  forecastConfirmed = forecastRange("confirmed")
+  forecastDeaths = forecastRange("deaths")
+  forecastRecovered = forecastRange("recovered")
+
+  plotData("confirmed")
+  plotData("deaths")
+  plotData("recovered")
 }
 
 main()
