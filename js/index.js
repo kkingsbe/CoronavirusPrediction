@@ -12,7 +12,7 @@ async function main() {
   states = states.sort()
   populateStates()
 
-  console.log(recoveredArray)
+  //console.log(recoveredArray)
 
   regressData("confirmed", confirmedArray)
   regressData("deaths", deathsArray)
@@ -68,6 +68,7 @@ async function getCovidData(fileUrl) {
           let region = result[i]
           if(state != "United States" && state != region["Province/State"]) continue
           if(region["Country/Region"] == "US") {
+            console.log(region)
             for(date in region) {
               //Skip if not a date
               if(!Date.parse(date)) {
@@ -233,7 +234,8 @@ function updateCurrentNumbers() {
   
   document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: ${Math.floor(infected)}`
   document.getElementById("predictedDead").innerHTML = `Est. Current Deaths: ${Math.floor(dead)}`
-  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
+  //document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
+  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: No Data`
 
   document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
   document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
