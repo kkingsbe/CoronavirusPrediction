@@ -39,13 +39,13 @@ async function getData() {
 }
 
 async function getConfirmed() {
-  return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv")
+  return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 }
 async function getDeaths() {
-  return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv")
+  return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 }
 async function getRecovered() {
-  return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv")
+  return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
 }
 
 async function getCovidData(fileUrl) {
@@ -66,7 +66,10 @@ async function getCovidData(fileUrl) {
       .then(result => {
         for(let i = 0; i < result.length; i++) {
           let region = result[i]
-          if(state != "United States" && state != region["Province/State"]) continue
+          console.log(fileUrl)
+          let stateKey = "ï»¿Province/State"
+          if(typeof(region["ï»¿Province/State"]) == "undefined") stateKey = "Province/State"
+          if(state != "United States" && state != region[stateKey]) continue
           if(region["Country/Region"] == "US") {
             console.log(region)
             for(date in region) {
@@ -74,11 +77,13 @@ async function getCovidData(fileUrl) {
               if(!Date.parse(date)) {
                 continue
               }
+              console.log(date)
               if(typeof(series[date]) == "undefined") {
                 series[date] = 0
               }
-              if(!region["Province/State"].includes(",") && !states.includes(region["Province/State"])) {
-                states.push(region["Province/State"])
+              console.log(stateKey)
+              if(!region[stateKey].includes(",") && !states.includes(region[stateKey])) {
+                states.push(region[stateKey])
               }
               series[date] += parseInt(region[date])
             }
