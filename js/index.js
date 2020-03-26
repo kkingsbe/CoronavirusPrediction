@@ -5,6 +5,7 @@ var deathsA, deathsB
 var recoveredArray, forecastRecovered
 var recoveredA, recoveredB
 var forecastLength = 7 //How many days into the future are forecasted
+//var forecastPeriod = 63 //How many days to look into the past when making the forecast
 var states = []
 
 async function main() {
@@ -116,6 +117,7 @@ function regressData(dataSet, data) {
   for(var i = 0; i < data.length; i++) {
     if(data[i][1] != 0) break
   }
+  //if((confirmedArray.length - forecastPeriod) > i) i = confirmedArray.length - forecastPeriod
   for(let x = i; x < data.length; x++) {
     trimmedData.push(data[x])
   }
@@ -239,8 +241,7 @@ function updateCurrentNumbers() {
   
   document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: ${Math.floor(infected)}`
   document.getElementById("predictedDead").innerHTML = `Est. Current Deaths: ${Math.floor(dead)}`
-  //document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
-  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: No Data`
+  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
 
   document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
   document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
