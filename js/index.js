@@ -1,5 +1,7 @@
 var confirmedArray, forecastConfirmed
 var confirmedA, confirmedB
+var newCasesArray, forecastNewCases //The new cases(value) per day since data start(index)
+var newCasesM, newCasesB
 var deathsArray, forecastDeaths
 var deathsA, deathsB
 var recoveredArray, forecastRecovered
@@ -13,19 +15,20 @@ async function main() {
   states = states.sort()
   populateStates()
 
-  //console.log(recoveredArray)
-
   regressData("confirmed", confirmedArray)
   regressData("deaths", deathsArray)
   regressData("recovered", recoveredArray)
+  linearRegress("newCases", newCasesArray)
 
   forecastConfirmed = forecastRange("confirmed")
   forecastDeaths = forecastRange("deaths")
   forecastRecovered = forecastRange("recovered")
+  forecastNewCases = forecastLinearRange("newCases")
 
   plotData("confirmed")
   plotData("deaths")
   plotData("recovered")
+  plotData("newCases")
 
   setInterval(updateCurrentNumbers, 100)
 }
@@ -37,10 +40,19 @@ async function getData() {
   deathsArray = timeSeriesToArray(deathsTimeSeries)
   var recoveredTimeSeries = await getRecovered()
   recoveredArray = timeSeriesToArray(recoveredTimeSeries)
+  newCasesArray = getNewCases()
 }
 
 async function getConfirmed() {
   return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+}
+function getNewCases() {
+  let arr = []
+  arr.push([0, 0])
+  for(var i = 1; i < confirmedArray.length; i++) {
+    arr.push([confirmedArray[i][1], confirmedArray[i][1] - confirmedArray[i-1][1]])
+  }
+  return arr
 }
 async function getDeaths() {
   return await getCovidData("https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
@@ -52,7 +64,7 @@ async function getRecovered() {
 async function getCovidData(fileUrl) {
   let series = {}
   let state = document.getElementById("stateSelect").value
-  console.log(state)
+  //console.log(state)
   return new Promise((resolve, reject) => {
     fetch(fileUrl)
     .then(response => {
@@ -67,7 +79,7 @@ async function getCovidData(fileUrl) {
       .then(result => {
         for(let i = 0; i < result.length; i++) {
           let region = result[i]
-          console.log(fileUrl)
+          //console.log(fileUrl)
           let stateKey = "ï»¿Province/State"
           if(typeof(region["ï»¿Province/State"]) == "undefined") stateKey = "Province/State"
           if(state != "United States" && state != region[stateKey]) continue
@@ -78,11 +90,11 @@ async function getCovidData(fileUrl) {
               if(!Date.parse(date)) {
                 continue
               }
-              console.log(date)
+              //console.log(date)
               if(typeof(series[date]) == "undefined") {
                 series[date] = 0
               }
-              console.log(stateKey)
+              //console.log(stateKey)
               if(!region[stateKey].includes(",") && !states.includes(region[stateKey])) {
                 states.push(region[stateKey])
               }
@@ -141,6 +153,18 @@ function regressData(dataSet, data) {
   }
   //console.log(result)
 }
+function linearRegress(dataSet, data) {
+  let result = regression("linear", data)
+  console.log(result)
+  m = result.equation[0]
+  b = result.equation[1]
+  switch(dataSet) {
+    case "newCases":
+      newCasesM = m
+      newCasesB = b
+      break 
+  }
+}
 
 function forecast(dataSet, daySinceEpoch) {
   let a, b
@@ -161,6 +185,17 @@ function forecast(dataSet, daySinceEpoch) {
   return a * Math.exp(b * daySinceEpoch)
 }
 
+function forecastLinear(dataSet, cases) {
+  let m, b
+  switch(dataSet) {
+    case "newCases":
+      m = newCasesM
+      b = newCasesB
+      break 
+  }
+  return m * cases + b
+}
+
 function forecastRange(dataSet) {
   let forcastArr = []
   for(var i = 0; i <= confirmedArray.length + forecastLength; i++) {
@@ -169,8 +204,15 @@ function forecastRange(dataSet) {
   return forcastArr
 }
 
+function forecastLinearRange(dataSet) {
+  let forcastArr = []
+  forcastArr.push([0, forecastLinear(dataSet, 0)])
+  forcastArr.push([confirmedArray[confirmedArray.length-1][1], forecastLinear(dataSet, confirmedArray[confirmedArray.length-1][1])])
+  return forcastArr
+}
+
 function plotData(dataSet) {
-  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName
+  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName, scaleType
   switch(dataSet) {
     case "confirmed":
       plot = document.getElementById("confirmedCasesGraph")
@@ -178,13 +220,33 @@ function plotData(dataSet) {
       arr = confirmedArray
       markerName = "Cases"
       title = `COVID-19 Cases in the US <br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`
+      xaxisName = "Days since January 22, 2020"
+      yaxisName = `Number of confirmed ${markerName}`
+      fitLineName = `Forecast ${markerName}`
       break 
+    case "newCases":
+      console.log(forecastNewCases)
+      plot = document.getElementById("newCasesGraph")
+      //forecastArr = forecastNewCases
+      forecastArr = []
+      arr = newCasesArray
+      markerName = "New Cases"
+      //title = `New COVID-19 Cases in the US Per Day<br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`
+      title = `New COVID-19 Cases in the US Per Number of Active Cases`
+      xaxisName = "Number of infections"
+      yaxisName = markerName
+      fitLineName = "U.S. Initial Trendline"
+      scaleType = "log"
+      break
     case "deaths":
       plot = document.getElementById("deathsGraph")
       forecastArr = forecastDeaths
       arr = deathsArray
       markerName = "Deaths"
       title = `COVID-19 Deaths in the US <br /> y = ${deathsA} x e <sup>${deathsB}x</sup>`
+      xaxisName = "Number of Confirmed Cases"
+      yaxisName = `Number of confirmed ${markerName}`
+      fitLineName = `Forecast ${markerName}`
       break
     case "recovered":
       plot = document.getElementById("recoveriesGraph")
@@ -192,6 +254,9 @@ function plotData(dataSet) {
       arr = recoveredArray
       markerName = "Recoveries"
       title = `COVID-19 Recoveries in the US <br /> y = ${recoveredA} x e <sup>${recoveredB}x</sup>`
+      xaxisName = "Days since January 22, 2020"
+      yaxisName = `Number of confirmed ${markerName}`
+      fitLineName = `Forecast ${markerName}`
       break
   }
   x = []
@@ -215,14 +280,14 @@ function plotData(dataSet) {
   fitLine = {
     x: forecastX,
     y: forecastY,
-    name: `Forecast ${markerName}`,
+    name: fitLineName,
     mode: "lines"
   }
   data = [fitLine, markers]
   layout = {
     title: title,
-    xaxis: {title: "Days since January 22, 2020"},
-    yaxis: {title: `Number of confirmed ${markerName}`}
+    xaxis: {title: xaxisName, type: scaleType},
+    yaxis: {title: yaxisName, type: scaleType}
   }
   Plotly.newPlot(plot, data, layout, {responsive: true})
 }
