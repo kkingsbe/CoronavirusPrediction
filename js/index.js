@@ -1,7 +1,8 @@
 var confirmedArray, forecastConfirmed
 var confirmedA, confirmedB
 var newCasesArray, newCasesFitData //The new cases(value) per day since data start(index)
-var newCasesM = 0.37, newCasesB = 0
+var newCasesM = 0.45, newCasesB = -0.75
+var deviationFromFitArray
 var deathsArray, forecastDeaths
 var deathsA, deathsB
 var deathRateArray
@@ -28,12 +29,15 @@ async function main() {
   newCasesFitData = logForecastRange("newCases")
   console.log(newCasesFitData)
 
+  deviationFromFitArray = getDeviationFromFitLine()
+
   plotData("confirmed")
   plotData("deaths")
   plotData("recovered")
   plotData("newCases")
   plotData("deathRate")
   plotNewCases()
+  plotDeviationFromFitLine()
 
   setInterval(updateCurrentNumbers, 100)
 }
@@ -58,6 +62,33 @@ function getNewCases() {
   for(var i = 1; i < confirmedArray.length; i++) {
     arr.push([confirmedArray[i][1], confirmedArray[i][1] - confirmedArray[i-1][1]])
   }
+  return arr
+}
+function getDeviationFromFitLine() {
+  let arr = []
+  newCasesArray.forEach(point => {
+    let infections = point[0]
+    let newCases = point[1]
+    let day
+    for(let i = 0; i < confirmedArray.length; i++) {
+      if(confirmedArray[i][1] == infections) {
+        day = i
+        break
+      }
+    }
+    let fitNewCases
+    for(let i = 0; i < newCasesFitData.length; i++) {
+      if(newCasesFitData[i][0] == infections) {
+        fitNewCases = newCasesFitData[i][1]
+        break
+      }
+    }
+    let difference = Math.abs(fitNewCases - newCases)
+    let percentDiff = (difference / ((fitNewCases + newCases) / 2)) * 100
+    let differenceIndex = percentDiff / day
+    console.log(`Predicted New Cases: ${fitNewCases}  Difference: ${difference}  Percent Diff: ${percentDiff}`)
+    arr.push([day, differenceIndex])
+  })
   return arr
 }
 function getDeathRate() {
@@ -373,6 +404,37 @@ function plotNewCases() {
     mode: "lines"
   }
   data = [fitLine, markers]
+  layout = {
+    title: title,
+    xaxis: {title: xaxisName, type: scaleType},
+    yaxis: {title: yaxisName, type: scaleType}
+  }
+  Plotly.newPlot(plot, data, layout, {responsive: true})
+}
+function plotDeviationFromFitLine() {
+  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName, scaleType
+
+  plot = document.getElementById("deviationFromFit")
+  arr = deviationFromFitArray
+  markerName = "Deviation Index"
+  title = `\"Deviation Index\" Over Time`
+  xaxisName = "Days Since January 22, 2020"
+  yaxisName = markerName
+  //scaleType = "log"
+
+  x = []
+  y = []
+  arr.forEach(point => {
+    x.push(point[0])
+    y.push(point[1])
+  })
+  markers = {
+    x: x,
+    y: y,
+    name: markerName,
+    mode: "markers"
+  }
+  data = [markers]
   layout = {
     title: title,
     xaxis: {title: xaxisName, type: scaleType},
