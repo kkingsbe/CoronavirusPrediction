@@ -1,6 +1,6 @@
 var confirmedArray, forecastConfirmed
 var confirmedA, confirmedB
-var newCasesArray, newCasesFitData //The new cases(value) per day since data start(index)
+var newCasesArray, newCasesFitData, newCasesOverTime //The new cases(value) per day since data start(index)
 var newCasesM = 0.45, newCasesB = -0.75
 var deviationFromFitArray
 var deathsArray, forecastDeaths
@@ -21,20 +21,20 @@ async function main() {
   regressData("deaths", deathsArray)
   regressData("recovered", recoveredArray)
   //logRegress("newCases", newCasesArray)
-  console.log(newCasesArray)
+  //console.log(newCasesArray)
+  console.log(newCasesOverTime)
 
   forecastConfirmed = forecastRange("confirmed")
   forecastDeaths = forecastRange("deaths")
   forecastRecovered = forecastRange("recovered")
   newCasesFitData = logForecastRange("newCases")
-  console.log(newCasesFitData)
 
   deviationFromFitArray = getDeviationFromFitLine()
 
   plotData("confirmed")
   plotData("deaths")
   plotData("recovered")
-  plotData("newCases")
+  plotData("newCasesOverTime")
   plotData("deathRate")
   plotNewCases()
   plotDeviationFromFitLine()
@@ -51,6 +51,7 @@ async function getData() {
   recoveredArray = timeSeriesToArray(recoveredTimeSeries)
   newCasesArray = getNewCases()
   deathRateArray = getDeathRate()
+  newCasesOverTime = getNewCasesOverTime()
 }
 
 async function getConfirmed() {
@@ -61,6 +62,14 @@ function getNewCases() {
   arr.push([0, 0])
   for(var i = 1; i < confirmedArray.length; i++) {
     arr.push([confirmedArray[i][1], confirmedArray[i][1] - confirmedArray[i-1][1]])
+  }
+  return arr
+}
+function getNewCasesOverTime() {
+  let arr = []
+  arr.push([0, 0])
+  for(var i = 1; i < confirmedArray.length; i++) {
+    arr.push([i, confirmedArray[i][1] - confirmedArray[i-1][1]])
   }
   return arr
 }
@@ -86,7 +95,7 @@ function getDeviationFromFitLine() {
     let difference = Math.abs(fitNewCases - newCases)
     let percentDiff = (difference / ((fitNewCases + newCases) / 2)) * 100
     let differenceIndex = percentDiff / day
-    console.log(`Predicted New Cases: ${fitNewCases}  Difference: ${difference}  Percent Diff: ${percentDiff}`)
+    //console.log(`Predicted New Cases: ${fitNewCases}  Difference: ${difference}  Percent Diff: ${percentDiff}`)
     arr.push([day, differenceIndex])
   })
   return arr
@@ -278,7 +287,7 @@ function logForecastRange(dataSet) {
 }
 
 function plotData(dataSet) {
-  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName, scaleType
+  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName, scaleType, markerType
   switch(dataSet) {
     case "confirmed":
       plot = document.getElementById("confirmedCasesGraph")
@@ -289,19 +298,20 @@ function plotData(dataSet) {
       xaxisName = "Days since January 22, 2020"
       yaxisName = `Number of confirmed ${markerName}`
       fitLineName = `Forecast ${markerName}`
+      markerType = "markers"
       break 
-    case "newCases":
+    case "newCasesOverTime":
       //console.log(forecastNewCases)
-      plot = document.getElementById("newCasesGraph")
-      forecastArr = newCasesFitData
-      arr = newCasesArray
+      plot = document.getElementById("newCasesOverTime")
+      arr = newCasesOverTime
       markerName = "New Cases"
+      forecastArr = []
       //title = `New COVID-19 Cases in the US Per Day<br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`
-      title = `New COVID-19 Cases in the US Per Number of Active Cases`
-      xaxisName = "Number of infections"
+      title = "New Cases Per Day"
+      xaxisName = "Days since January 22, 2020"
       yaxisName = markerName
-      fitLineName = "U.S. Initial Trendline"
       //scaleType = "log"
+      markerType = "lines"
       break
     case "deaths":
       plot = document.getElementById("deathsGraph")
@@ -312,6 +322,7 @@ function plotData(dataSet) {
       xaxisName = "Number of Confirmed Cases"
       yaxisName = `Number of confirmed ${markerName}`
       fitLineName = `Forecast ${markerName}`
+      markerType = "markers"
       break
     case "deathRate":
       plot = document.getElementById("deathRateGraph")
@@ -322,6 +333,7 @@ function plotData(dataSet) {
       xaxisName = "Days since January 22, 2020"
       yaxisName = "Percieved Death Rate (%)"
       fitLineName = ""
+      markerType = "markers"
       break
     case "recovered":
       plot = document.getElementById("recoveriesGraph")
@@ -332,6 +344,7 @@ function plotData(dataSet) {
       xaxisName = "Days since January 22, 2020"
       yaxisName = `Number of confirmed ${markerName}`
       fitLineName = `Forecast ${markerName}`
+      markerType = "markers"
       break
   }
   x = []
@@ -350,7 +363,7 @@ function plotData(dataSet) {
     x: x,
     y: y,
     name: markerName,
-    mode: "markers"
+    mode: markerType
   }
   fitLine = {
     x: forecastX,
