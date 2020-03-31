@@ -1,7 +1,7 @@
 var confirmedArray, forecastConfirmed
 var confirmedA, confirmedB
 var newCasesArray, newCasesFitData, newCasesOverTime //The new cases(value) per day since data start(index)
-var newCasesM = 0.45, newCasesB = -0.75
+var newCasesM = 0.435, newCasesB = -0.59
 var deviationFromFitArray
 var deathsArray, forecastDeaths
 var deathsA, deathsB
