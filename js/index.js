@@ -17,21 +17,21 @@ async function main() {
   states = states.sort()
   populateStates()
 
-  regressData("confirmed", confirmedArray)
+  //logisticRegress("confirmed", confirmedArray)
   regressData("deaths", deathsArray)
   regressData("recovered", recoveredArray)
   //logRegress("newCases", newCasesArray)
   //console.log(newCasesArray)
   console.log(newCasesOverTime)
 
-  forecastConfirmed = forecastRange("confirmed")
+  //forecastConfirmed = forecastRange("confirmed")
   forecastDeaths = forecastRange("deaths")
   forecastRecovered = forecastRange("recovered")
   newCasesFitData = logForecastRange("newCases")
 
   deviationFromFitArray = getDeviationFromFitLine()
 
-  plotData("confirmed")
+  plotConfirmedCases()
   plotData("deaths")
   plotData("recovered")
   plotData("newCasesOverTime")
@@ -226,6 +226,35 @@ function logRegress(dataSet, data) {
   str += "}"
   console.log(str)
 }
+function logisticRegress(dataSet, data) {
+  let trimmedData = []
+  for(var i = 0; i < data.length; i++) {
+    if(data[i][1] != 0) break
+  }
+  //if((confirmedArray.length - forecastPeriod) > i) i = confirmedArray.length - forecastPeriod
+  for(let x = i; x < data.length; x++) {
+    trimmedData.push(data[x])
+  }
+  //console.log(trimmedData)
+  let result = regression("logistic", trimmedData)
+  console.log(result)
+  a = result.equation[0]
+  b = result.equation[1]
+  switch(dataSet) {
+    case "confirmed":
+      confirmedA = a
+      confirmedB = b
+      break 
+    case "deaths":
+      deathsA = a
+      deathsB = b
+      break
+    case "recovered":
+      recoveredA = a
+      recoveredB = b
+      break
+  }
+}
 
 function forecast(dataSet, daySinceEpoch) {
   let a, b
@@ -379,6 +408,57 @@ function plotData(dataSet) {
   }
   Plotly.newPlot(plot, data, layout, {responsive: true})
 }
+function plotConfirmedCases() {
+  let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName, scaleType
+
+  plot = document.getElementById("confirmedCasesGraph")
+  forecastArr = forecastConfirmed
+  arr = confirmedArray
+  markerName = "Cases"
+  //title = `COVID-19 Cases in the US <br /> y = ${confirmedA} x e <sup>${confirmedB}x</sup>`
+  title = `COVID-19 Cases in the US`
+  xaxisName = "Days since January 22, 2020"
+  yaxisName = `Number of confirmed ${markerName}`
+  fitLineName = `Forecast ${markerName}`
+  markerType = "lines"
+
+  x = []
+  y = []
+  arr.forEach(point => {
+    x.push(point[0])
+    y.push(point[1])
+  })
+  /*
+  forecastX = []
+  forecastY = []
+  forecastArr.forEach(point => {
+    forecastX.push(point[0])
+    forecastY.push(point[1])
+  })
+  */
+  markers = {
+    x: x,
+    y: y,
+    name: markerName,
+    mode: markerType
+  }
+  /*
+  fitLine = {
+    x: forecastX,
+    y: forecastY,
+    name: fitLineName,
+    mode: "lines"
+  }
+  */
+  //data = [fitLine, markers]
+  data = [markers]
+  layout = {
+    title: title,
+    xaxis: {title: xaxisName, type: scaleType},
+    yaxis: {title: yaxisName, type: scaleType}
+  }
+  Plotly.newPlot(plot, data, layout, {responsive: true})
+}
 function plotNewCases() {
   let plot, arr, forecastArr, x, y, markers, data, layout, title, markerName, scaleType
 
@@ -468,7 +548,8 @@ function updateCurrentNumbers() {
   let dead = forecast("deaths", confirmedArray.length-1 + (diff/8.64e+7))
   let recovered = forecast("recovered", confirmedArray.length-1 + (diff/8.64e+7))
   
-  document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: ${Math.floor(infected)}`
+  //document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: ${Math.floor(infected)}`
+  document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: Inaccurate Data`
   document.getElementById("predictedDead").innerHTML = `Est. Current Deaths: ${Math.floor(dead)}`
   document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
 
