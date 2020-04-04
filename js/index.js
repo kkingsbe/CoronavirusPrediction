@@ -92,11 +92,11 @@ function getDeviationFromFitLine() {
         break
       }
     }
-    let difference = Math.abs(fitNewCases - newCases)
+    let difference = newCases - fitNewCases
     let percentDiff = (difference / ((fitNewCases + newCases) / 2)) * 100
-    let differenceIndex = percentDiff / day
+    let differenceIndex = percentDiff / infections
     //console.log(`Predicted New Cases: ${fitNewCases}  Difference: ${difference}  Percent Diff: ${percentDiff}`)
-    arr.push([day, differenceIndex])
+    arr.push([day, difference])
   })
   return arr
 }
@@ -366,14 +366,15 @@ function plotData(dataSet) {
       break
     case "recovered":
       plot = document.getElementById("recoveriesGraph")
-      forecastArr = forecastRecovered
+      //forecastArr = forecastRecovered
+      forecastArr = []
       arr = recoveredArray
       markerName = "Recoveries"
       title = `COVID-19 Recoveries in the US <br /> y = ${recoveredA} x e <sup>${recoveredB}x</sup>`
       xaxisName = "Days since January 22, 2020"
       yaxisName = `Number of confirmed ${markerName}`
       fitLineName = `Forecast ${markerName}`
-      markerType = "markers"
+      markerType = "lines"
       break
   }
   x = []
@@ -509,8 +510,8 @@ function plotDeviationFromFitLine() {
 
   plot = document.getElementById("deviationFromFit")
   arr = deviationFromFitArray
-  markerName = "Deviation Index"
-  title = `\"Deviation Index\" Over Time`
+  markerName = "Deviation (# of cases)"
+  title = `Deviation from New Cases Fit Line Over Time (Smaller number = good)`
   xaxisName = "Days Since January 22, 2020"
   yaxisName = markerName
   //scaleType = "log"
@@ -551,11 +552,12 @@ function updateCurrentNumbers() {
   //document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: ${Math.floor(infected)}`
   document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: Inaccurate Data`
   document.getElementById("predictedDead").innerHTML = `Est. Current Deaths: ${Math.floor(dead)}`
-  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
+  //document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
+  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: Inaccurate Data`
 
-  document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
+  //document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
   document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
-  document.getElementById("recoveredProgressBar").value = (recovered - Math.floor(recovered)) * 100
+  //document.getElementById("recoveredProgressBar").value = (recovered - Math.floor(recovered)) * 100
 }
 
 function populateStates() {
