@@ -344,14 +344,15 @@ function plotData(dataSet) {
       break
     case "deaths":
       plot = document.getElementById("deathsGraph")
-      forecastArr = forecastDeaths
+      //forecastArr = forecastDeaths
+      forecastArr = []
       arr = deathsArray
       markerName = "Deaths"
       title = `COVID-19 Deaths in the US <br /> y = ${deathsA} x e <sup>${deathsB}x</sup>`
       xaxisName = "Number of Confirmed Cases"
       yaxisName = `Number of confirmed ${markerName}`
       fitLineName = `Forecast ${markerName}`
-      markerType = "markers"
+      markerType = "lines"
       break
     case "deathRate":
       plot = document.getElementById("deathRateGraph")
@@ -550,13 +551,13 @@ function updateCurrentNumbers() {
   let recovered = forecast("recovered", confirmedArray.length-1 + (diff/8.64e+7))
   
   //document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: ${Math.floor(infected)}`
-  document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: Inaccurate Data`
-  document.getElementById("predictedDead").innerHTML = `Est. Current Deaths: ${Math.floor(dead)}`
+  //document.getElementById("predictedInfected").innerHTML = `Est. Current Infections: Inaccurate Data`
+  //document.getElementById("predictedDead").innerHTML = `Est. Current Deaths: ${Math.floor(dead)}`
   //document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: ${Math.floor(recovered)}`
-  document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: Inaccurate Data`
+  //document.getElementById("predictedRecovered").innerHTML = `Est. Current Recoveries: Inaccurate Data`
 
   //document.getElementById("infectedProgressBar").value = (infected - Math.floor(infected)) * 100
-  document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
+  //document.getElementById("deadProgressBar").value = (dead - Math.floor(dead)) * 100
   //document.getElementById("recoveredProgressBar").value = (recovered - Math.floor(recovered)) * 100
 }
 
